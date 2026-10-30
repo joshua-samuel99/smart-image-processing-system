@@ -1,0 +1,137 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SIPES | Image Intelligence Lab</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <div class="logo">S</div>
+      <div><h1>Smart Image Processing and Enhancement System</h1>
+      <p class="mut">Diagnose first, enhance second, keep the record.</p></div>
+    </div>
+    <div class="warn">⚠ Forensic indicators are preliminary. They do not prove that an image is authentic or manipulated.</div>
+  </header>
+
+  <div class="grid">
+    <aside class="side">
+      <h2>Image workspace</h2>
+      <label class="drop" id="drop" for="file">
+        <input type="file" id="file" accept="image/png,image/jpeg,image/webp">
+        <span class="upload-icon">↑</span>
+        <strong>Drop an image here</strong>
+        <span class="mut">or click to choose PNG, JPEG or WebP</span>
+      </label>
+      <p id="meta" class="mut sm">No image loaded.</p>
+
+      <fieldset class="modes">
+        <legend>Operating mode</legend>
+        <label><input type="radio" name="mode" value="normal" checked><span><b>Normal</b><small>All available adjustments</small></span></label>
+        <label><input type="radio" name="mode" value="cautious"><span><b>Cautious</b><small>Moderate enhancement</small></span></label>
+        <label><input type="radio" name="mode" value="strict"><span><b>Strict</b><small>Brightness and contrast only</small></span></label>
+      </fieldset>
+
+      <button id="go" class="primary full" disabled>Analyse and enhance</button>
+      <button id="demo" class="full">Load demo image</button>
+      <p id="status" class="mut sm" role="status" aria-live="polite">Ready to load an image.</p>
+
+      <div class="order">
+        <h3>Available operations</h3>
+        <ol><li>Diagnosis</li><li>Brightness / contrast</li><li>Gamma correction</li><li>Sharpening</li><li>Smoothing</li><li>Forensic screening</li><li>Integrity verification</li></ol>
+      </div>
+    </aside>
+
+    <main>
+      <nav class="tabs" aria-label="Workspace">
+        <button class="tab active" data-tab="compare">Compare</button>
+        <button class="tab" data-tab="diagnosis">Diagnosis</button>
+        <button class="tab" data-tab="forensics">Forensics</button>
+        <button class="tab" data-tab="integrity">Integrity</button>
+        <button class="tab" data-tab="report">Report</button>
+        <button class="tab" data-tab="about">About</button>
+      </nav>
+
+      <section class="view active" id="view-compare">
+        <div class="section-head"><div><h2>Image comparison</h2><p class="mut">Inspect the original and enhanced output.</p></div><span class="tag">01 / COMPARE</span></div>
+        <div class="image-grid">
+          <div class="image-card"><div class="image-title">ORIGINAL</div><div class="preview" id="originalPreview">Choose an image to begin</div></div>
+          <div class="image-card"><div class="image-title">PROCESSED OUTPUT</div><div class="preview" id="processedPreview">Output appears here</div></div>
+        </div>
+        <div class="compare-control"><label for="slider">Before / after comparison</label><input id="slider" type="range" min="0" max="100" value="50"></div>
+        <div class="compare-preview" id="comparePreview">Comparison appears here</div>
+        <div class="controls">
+          <label>Brightness <output id="brightnessVal">0</output><input id="brightness" type="range" min="-80" max="80" value="0"></label>
+          <label>Contrast <output id="contrastVal">0</output><input id="contrast" type="range" min="-80" max="80" value="0"></label>
+          <label>Gamma <output id="gammaVal">1.00</output><input id="gamma" type="range" min="50" max="180" value="100"></label>
+          <label>Sharpen <output id="sharpenVal">0</output><input id="sharpen" type="range" min="0" max="100" value="0"></label>
+          <label>Smoothing <output id="smoothVal">0</output><input id="smooth" type="range" min="0" max="2" value="0"></label>
+        </div>
+        <div class="actions"><button id="reset">Reset edits</button><button id="gray">Toggle grayscale</button><button id="downloadImage" class="blue">Download processed PNG</button></div>
+      </section>
+
+      <section class="view" id="view-diagnosis">
+        <div class="section-head"><div><h2>Image diagnosis</h2><p class="mut">Pixel-based measurements from the uploaded image.</p></div><span class="tag">02 / DIAGNOSIS</span></div>
+        <div class="metric-grid">
+          <article class="metric"><span>01</span><h3>Brightness</h3><strong id="mBrightness">—</strong><p>Mean luminance, 0–255</p></article>
+          <article class="metric"><span>02</span><h3>Contrast</h3><strong id="mContrast">—</strong><p>Luminance standard deviation</p></article>
+          <article class="metric"><span>03</span><h3>Sharpness indicator</h3><strong id="mSharpness">—</strong><p>Laplacian variance approximation</p></article>
+          <article class="metric"><span>04</span><h3>Clipped pixels</h3><strong id="mClipping">—</strong><p>Near-black and near-white pixels</p></article>
+          <article class="metric"><span>05</span><h3>Resolution</h3><strong id="mResolution">—</strong><p>Analysis image dimensions</p></article>
+          <article class="metric"><span>06</span><h3>File size</h3><strong id="mSize">—</strong><p>Original upload size</p></article>
+        </div>
+        <h3 class="subheading">Diagnosis summary</h3><div id="diagnosisText" class="result">Upload an image to view diagnosis.</div>
+      </section>
+
+      <section class="view" id="view-forensics">
+        <div class="section-head"><div><h2>Forensic screening lab</h2><p class="mut">Run the available tests on your original image.</p></div><span class="tag amber">03 / FORENSICS</span></div>
+        <div class="warning">These tests identify possible anomalies, not proof of tampering. Recompression and natural image textures can create false positives.</div>
+        <div class="forensic-grid">
+          <article class="forensic-card"><span class="number">01 / ELA</span><h3>Error Level Analysis</h3><p class="mut">Compare the original with a JPEG recompression.</p><button id="runELA" class="full">Run ELA</button><div id="elaResult" class="result">Not run</div><div id="elaPreview" class="map">ELA MAP</div></article>
+          <article class="forensic-card"><span class="number">02 / RESIDUAL</span><h3>Noise residual</h3><p class="mut">Visualise local high-frequency pixel differences.</p><button id="runNoise" class="full">Run noise test</button><div id="noiseResult" class="result">Not run</div><div id="noisePreview" class="map">NOISE MAP</div></article>
+          <article class="forensic-card"><span class="number">03 / PATCH SCAN</span><h3>Copy-move candidates</h3><p class="mut">Find similar image patches separated by distance.</p><button id="runCopy" class="full">Scan patches</button><div id="copyResult" class="result">Not run</div><div id="copyPreview" class="map">CANDIDATE MAP</div></article>
+        </div>
+        <button id="runAll" class="primary">Run all forensic tests</button>
+        <h3 class="subheading">Findings</h3><div id="forensicSummary" class="result">No tests have been run.</div>
+      </section>
+
+      <section class="view" id="view-integrity">
+        <div class="section-head"><div><h2>Integrity and tamper testing</h2><p class="mut">Verify file fingerprints and processing history.</p></div><span class="tag">04 / INTEGRITY</span></div>
+        <button id="hashBtn" class="blue">Calculate SHA-256 hashes</button>
+        <div class="hash-card"><h3>Original file SHA-256</h3><code id="originalHash">Not calculated</code></div>
+        <div class="hash-card"><h3>Processed image SHA-256</h3><code id="processedHash">Not calculated</code></div>
+        <h3 class="subheading">Processing lineage</h3>
+        <div id="lineage" class="result">Analyse an image to create a processing record.</div>
+        <button id="tamperBtn" class="primary">Run tamper test</button>
+        <div id="tamperResult" class="result">The test verifies an untouched chain and then checks whether a deliberately altered copy is detected.</div>
+        <p class="mut sm">This validates hash-chain consistency. It does not prove image authenticity or protect against a person who can replace the entire chain and its trusted hashes.</p>
+      </section>
+
+      <section class="view" id="view-report">
+        <div class="section-head"><div><h2>Reports and validation</h2><p class="mut">Export the current analysis and forensic results.</p></div><span class="tag">05 / REPORT</span></div>
+        <div class="actions"><button id="downloadJSON" class="blue">Download JSON report</button><button id="downloadHTML">Download HTML report</button><button id="copyReport">Copy report</button><button id="selfTest">Run self-tests</button></div>
+        <div id="selfTestResult" class="result">Self-tests not run.</div>
+        <h3 class="subheading">Report preview</h3><pre id="reportPreview">Upload and analyse an image to generate a report.</pre>
+        <h3 class="subheading">Activity log</h3><div id="history" class="result">No activity yet.</div>
+      </section>
+
+      <section class="view" id="view-about">
+        <div class="section-head"><div><h2>About SIPES</h2><p class="mut">Smart Image Processing and Enhancement System.</p></div><span class="tag">06 / ABOUT</span></div>
+        <div class="about-card"><div class="about-logo">S</div><h2>See beyond the pixels.</h2><p>Academic prototype for image diagnosis, enhancement, forensic screening, and file integrity checks.</p></div>
+        <div class="metric-grid">
+          <article class="metric"><h3>Image processing</h3><p>Brightness, contrast, gamma, sharpening, smoothing and grayscale.</p></article>
+          <article class="metric"><h3>Forensic screening</h3><p>ELA-style recompression map, residual heatmap and patch matching.</p></article>
+          <article class="metric"><h3>Integrity</h3><p>SHA-256 fingerprints and a tamper-evident processing chain.</p></article>
+          <article class="metric"><h3>Limitations</h3><p>Browser approximations are not equivalent to the Python/OpenCV pipeline.</p></article>
+        </div>
+      </section>
+    </main>
+  </div>
+  <footer>SIPES · IMAGE INTELLIGENCE LAB <span>Academic prototype · Local browser processing</span></footer>
+</div>
+<div id="toast" role="status"></div>
+<script src="./script.js"></script>
+</body>
+</html>
